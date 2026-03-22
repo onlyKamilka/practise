@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Змейка · уровни / классика</title>
+
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Змейка" />
+    <meta name="theme-color" content="#1b4a3b" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        overflow: hidden;
+        transition: background-color 0.2s;
+      }
+
+      /* Тёмная тема (по умолчанию) - более сочные цвета */
+      body.dark-theme {
+        background: #1b4a3b;
+      }
+
+      body.dark-theme .game-container {
+        background: #2a5e4a;
+        border-color: #6da58b;
+      }
+
+      body.dark-theme .settings-gear,
+      body.dark-theme .theme-toggle,
+      body.dark-theme .mode-toggle,
+      body.dark-theme #leaderboardBtn {
+        background: #3b7a61;
+        border-color: #8ed3b0;
+        color: #f0ffe8;
+      }
+
+      body.dark-theme .settings-panel {
+        background: #2a5e4a;
+        border-color: #6da58b;
+      }
+
+      body.dark-theme .stats-compact {
+        background: #1d4a39;
+        border-color: #6da58b;
+      }
+
+      body.dark-theme .level-btn,
+      body.dark-theme .mode-btn {
+        border-color: #6da58b;
+        color: #e0ffe0;
+      }
+
+      body.dark-theme .level-btn.active,
+      body.dark-theme .mode-btn.active {
+        background: #ffb347;
+        color: #1d3b2f;
+        border-color: #ffa01c;
+      }
+
+      body.dark-theme .level-btn.completed {
+        color: #ffd966;
+        border-color: #ffb347;
+      }
+
+      body.dark-theme .progress-strip {
+        background: #1d4a39;
+        border-color: #6da58b;
+      }
+
+      body.dark-theme .canvas-wrapper {
+        background: #1d4a39;
+        border-color: #6da58b;
+      }
+
+      body.dark-theme #gameCanvas {
+        background: #1b4a3b;
+        box-shadow: 0 0 0 1px #6da58b;
+      }
+
+      body.dark-theme .action-btn {
+        background: #1d4a39;
+        border-color: #6da58b;
+        color: #e0ffe0;
+      }
+
+      body.dark-theme .action-btn:hover:not(:disabled) {
+        background: #3b7a61;
+        border-color: #ffb347;
+        color: white;
+      }
+
+      body.dark-theme .mobile-btn {
+        background: #1d4a39;
+        border-color: #6da58b;
+        color: #ffb347;
+      }
+
+      body.dark-theme .hint {
+        color: #b0e0c0;
+      }
+
+      body.light-theme {
+        background: #c8e6d0;
+      }
+
+      body.light-theme .game-container {
+        background: #e2f0e6;
+        border-color: #8fc1a0;
+        box-shadow: 0 10px 25px rgba(0, 60, 0, 0.1);
+      }
+
+      body.light-theme .settings-gear,
+      body.light-theme .theme-toggle,
+      body.light-theme .mode-toggle,
+      body.light-theme #leaderboardBtn {
+        background: #d4ecd9;
+        border-color: #6fa883;
+        color: #2d5a44;
+      }
+
+      body.light-theme .settings-panel {
+        background: #e2f0e6;
+        border-color: #8fc1a0;
+      }
+
+      body.light-theme .stats-compact {
+        background: #d4ecd9;
+        border-color: #8fc1a0;
+      }
+
+      body.light-theme .stat-dot {
+        color: #2d5a44;
+      }
+
+      body.light-theme .level-btn,
+      body.light-theme .mode-btn {
+        border-color: #8fc1a0;
+        color: #2d5a44;
+      }
+
+      body.light-theme .level-btn.active,
+      body.light-theme .mode-btn.active {
+        background: #ffb347;
+        color: #1d3b2f;
+        border-color: #ffa01c;
+      }
+
+      body.light-theme .level-btn.completed {
+        color: #c97f00;
+        border-color: #ffb347;
+      }
+
+      body.light-theme .progress-strip {
+        background: #d4ecd9;
+        border-color: #8fc1a0;
+      }
+
+      body.light-theme .canvas-wrapper {
+        background: #d4ecd9;
+        border-color: #8fc1a0;
+      }
+
+      body.light-theme #gameCanvas {
+        background: #e2f0e6;
+        box-shadow: 0 0 0 1px #8fc1a0;
+      }
+
+      body.light-theme .action-btn {
+        background: #d4ecd9;
+        border-color: #8fc1a0;
+        color: #2d5a44;
+      }
+
+      body.light-theme .action-btn:hover:not(:disabled) {
+        background: #c0e0c8;
+        border-color: #ffb347;
+        color: #1d4a39;
+      }
+
+      body.light-theme .mobile-btn {
+        background: #d4ecd9;
+        border-color: #8fc1a0;
+        color: #ffa01c;
+      }
+
+      body.light-theme .hint {
+        color: #5f8b74;
+      }
+
+      .game-container {
+        border-radius: 28px;
+        padding: 16px 18px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        max-width: 700px;
+        width: 100%;
+        max-height: 98vh;
+        height: fit-content;
+        position: relative;
+        border: 1px solid;
+        transition: all 0.2s;
+      }
+
+      .settings-gear,
+      .theme-toggle,
+      .mode-toggle,
+      #leaderboardBtn {
+        position: absolute;
+        top: 16px;
+        cursor: pointer;
+        font-size: 20px;
+        transition: all 0.2s;
+        z-index: 10;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid;
+      }
+
+      .mode-toggle {
+        right: 120px;
+        font-size: 18px;
+      }
+
+      .theme-toggle {
+        right: 70px;
+      }
+
+      .settings-gear {
+        right: 18px;
+      }
+
+      #leaderboardBtn {
+        right: 170px;
+        font-size: 18px;
+      }
+
+      .settings-panel {
+        position: absolute;
+        top: 65px;
+        right: 18px;
+        border-radius: 18px;
+        padding: 18px;
+        display: none;
+        z-index: 20;
+        min-width: 220px;
+        border: 1px solid;
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .settings-panel.show {
+        display: block;
+      }
+
+      .settings-panel h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid;
+        padding-bottom: 8px;
+      }
+
+      .setting-item {
+        margin-bottom: 15px;
+      }
+
+      .setting-item label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+
+      .value-display {
+        color: #ffb347;
+        font-weight: 600;
+      }
+
+      .setting-item input[type="range"] {
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        background: #cbd5e1;
+        -webkit-appearance: none;
+      }
+
+      .setting-item input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        background: #ffb347;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid white;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding-right: 220px;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        background: linear-gradient(135deg, #ffd966, #ffb347);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .stats-compact {
+        display: flex;
+        gap: 15px;
+        padding: 8px 18px;
+        border-radius: 40px;
+        border: 1px solid;
+        align-items: center;
+      }
+
+      .stat-dot {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .stat-dot span {
+        font-weight: 700;
+        margin-left: 2px;
+      }
+
+      .mode-selector {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 10px 0 10px;
+      }
+
+      .mode-btn {
+        background: transparent;
+        border: 1px solid;
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        flex: 0 1 auto;
+      }
+
+      .mode-btn.active {
+        background: #ffb347;
+        color: #1d3b2f;
+        border-color: #ffa01c;
+      }
+
+      .levels-menu {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin: 10px 0 12px;
+        flex-wrap: wrap;
+      }
+
+      .level-btn {
+        background: transparent;
+        border: 1px solid;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .level-btn.locked {
+        opacity: 0.4;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      .progress-strip {
+        height: 6px;
+        border-radius: 3px;
+        margin: 12px 0 10px;
+        border: 1px solid;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: #ffb347;
+        transition: width 0.15s;
+        width: 0%;
+      }
+
+      .canvas-wrapper {
+        border-radius: 18px;
+        padding: 12px;
+        display: flex;
+        justify-content: center;
+        border: 1px solid;
+      }
+
+      #gameCanvas {
+        display: block;
+        border-radius: 12px;
+        image-rendering: crisp-edges;
+        max-width: 100%;
+        height: auto;
+        max-height: 55vh;
+      }
+
+      .game-message {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 500;
+        min-height: 40px;
+        margin: 8px 0;
+      }
+
+      .game-over {
+        color: #ff6b6b;
+      }
+
+      .victory {
+        color: #ffb347;
+      }
+
+      .score-display {
+        color: #ffb347;
+        font-weight: 600;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 10px 0 8px;
+        flex-wrap: wrap;
+      }
+
+      .action-btn {
+        border: 1px solid;
+        padding: 10px 24px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        flex: 0 1 auto;
+        min-width: 100px;
+        background: transparent;
+      }
+
+      .action-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      .mobile-controls {
+        display: none;
+        justify-content: center;
+        margin-top: 8px;
+      }
+
+      .mobile-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        max-width: 200px;
+        padding: 12px;
+        border-radius: 28px;
+        border: 1px solid;
+        background: inherit;
+      }
+
+      .mobile-btn {
+        border: 1px solid;
+        font-size: 26px;
+        padding: 8px 0;
+        border-radius: 18px;
+        cursor: pointer;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+      }
+
+      .hint {
+        font-size: 13px;
+        text-align: center;
+        margin-top: 8px;
+        letter-spacing: 0.3px;
+        padding: 6px;
+        border-radius: 20px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .classic-record {
+        margin-left: 8px;
+        color: #ffb347;
+        font-weight: 600;
+      }
+
+      .debug-panel {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #0f0;
+        font-family: monospace;
+        font-size: 12px;
+        padding: 5px;
+        border-radius: 5px;
+        max-width: 300px;
+        max-height: 100px;
+        overflow: auto;
+        z-index: 1000;
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="dark-theme">
+    <div class="game-container">
+      <div class="mode-toggle" id="modeToggle" title="Сменить режим">🎮</div>
+      <div class="theme-toggle" id="themeToggle" title="Сменить тему">🌓</div>
+      <div class="settings-gear" id="settingsGear">⚙️</div>
+      <div id="leaderboardBtn" title="Таблица рекордов">🏆</div>
+
+      <div class="settings-panel" id="settingsPanel">
+        <h3>настройки</h3>
+        <div class="setting-item">
+          <label
+            >скорость
+            <span class="value-display" id="speedValue">200</span></label
+          >
+          <input
+            type="range"
+            id="speedSlider"
+            min="120"
+            max="450"
+            value="200"
+            step="10"
+          />
+        </div>
+        <div class="setting-item">
+          <label
+            >ускорение за яблоко
+            <span class="value-display" id="speedIncreaseValue">3</span></label
+          >
+          <input
+            type="range"
+            id="speedIncreaseSlider"
+            min="1"
+            max="12"
+            value="3"
+            step="1"
+          />
+        </div>
+        <div class="setting-item">
+          <label
+            >масштаб
+            <span class="value-display" id="cellSizeValue">65</span></label
+          >
+          <input
+            type="range"
+            id="cellSizeSlider"
+            min="45"
+            max="90"
+            value="65"
+            step="5"
+          />
+        </div>
+        <button
+          id="resetSettings"
+          style="
+            background: transparent;
+            border: 1px solid;
+            padding: 8px;
+            width: 100%;
+            border-radius: 30px;
+            cursor: pointer;
+          "
+        >
+          сброс
+        </button>
+      </div>
+
+      <div class="header">
+        <h1>snake</h1>
+        <div class="stats-compact">
+          <div class="stat-dot" id="appleStat">
+            <span>🍎</span>
+            <span id="applesCollected">0</span>/<span id="totalApples">35</span>
+          </div>
+          <div class="stat-dot" id="snakeStat">
+            <span>📏</span>
+            <span id="length">1</span>/<span id="maxLength">36</span>
+            <span
+              id="classicRecordDisplay"
+              class="classic-record hidden"
+            ></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="levels">📊 уровни</button>
+        <button class="mode-btn" data-mode="classic">🎯 классика</button>
+      </div>
+
+      <div class="levels-menu" id="levelMenu">
+        <button class="level-btn active" data-level="1">6x6</button>
+        <button class="level-btn locked" data-level="2">9x9</button>
+        <button class="level-btn locked" data-level="3">12x12</button>
+        <button class="level-btn locked" data-level="4">15x15</button>
+        <button class="level-btn locked" data-level="5">18x18</button>
+        <button class="level-btn locked" data-level="6">21x21</button>
+      </div>
+
+      <div class="progress-strip" id="progressStrip">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <div class="canvas-container">
+          <canvas id="gameCanvas" width="390" height="390"></canvas>
+        </div>
+      </div>
+
+      <div class="game-message">
+        <div id="gameOver" class="game-over"></div>
+        <div id="victoryMessage" class="victory"></div>
+        <div id="scoreMessage" class="score-display"></div>
+      </div>
+
+      <div class="controls">
+        <button class="action-btn" id="startBtn" disabled>▶ старт</button>
+        <button class="action-btn" id="pauseBtn" disabled>⏸ пауза</button>
+        <button class="action-btn" id="resetBtn">↺ сброс</button>
+        <button
+          class="action-btn"
+          id="testBtn"
+          style="background: #9c27b0; border-color: #7b1fa2; color: white"
+        >
+          🧪 тесты
+        </button>
+      </div>
+
+      <div class="mobile-controls" id="mobileControls">
+        <div class="mobile-grid">
+          <div></div>
+          <button class="mobile-btn" data-dir="up">↑</button>
+          <div></div>
+          <button class="mobile-btn" data-dir="left">←</button>
+          <button class="mobile-btn" data-dir="down">↓</button>
+          <button class="mobile-btn" data-dir="right">→</button>
+        </div>
+      </div>
+
+      <div class="hint" id="hint">
+        ⬆️⬇️⬅️➡️ клавиши · собрать все яблоки · заполнить поле
+      </div>
+    </div>
+
+    <div class="debug-panel" id="debugPanel"></div>
+
+    <script>
+      (function () {
+        const LEVELS = {
+          1: { grid: 6, cellSize: 65, canvasSize: 390 },
+          2: { grid: 9, cellSize: 43, canvasSize: 387 },
+          3: { grid: 12, cellSize: 32, canvasSize: 384 },
+          4: { grid: 15, cellSize: 26, canvasSize: 390 },
+          5: { grid: 18, cellSize: 21, canvasSize: 378 },
+          6: { grid: 21, cellSize: 18, canvasSize: 378 },
+        };
+
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const applesCollectedEl = document.getElementById("applesCollected");
+        const totalApplesEl = document.getElementById("totalApples");
+        const lengthEl = document.getElementById("length");
+        const maxLengthEl = document.getElementById("maxLength");
+        const progressFill = document.getElementById("progressFill");
+        const progressStrip = document.getElementById("progressStrip");
+        const gameOverEl = document.getElementById("gameOver");
+        const victoryEl = document.getElementById("victoryMessage");
+        const scoreMessage = document.getElementById("scoreMessage");
+        const hintEl = document.getElementById("hint");
+        const startBtn = document.getElementById("startBtn");
+        const pauseBtn = document.getElementById("pauseBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const settingsGear = document.getElementById("settingsGear");
+        const settingsPanel = document.getElementById("settingsPanel");
+        const themeToggle = document.getElementById("themeToggle");
+        const modeToggle = document.getElementById("modeToggle");
+        const leaderboardBtn = document.getElementById("leaderboardBtn");
+        const modeButtons = document.querySelectorAll(".mode-btn");
+        const levelMenu = document.getElementById("levelMenu");
+        const appleStat = document.getElementById("appleStat");
+        const snakeStat = document.getElementById("snakeStat");
+        const classicRecordDisplay = document.getElementById(
+          "classicRecordDisplay"
+        );
+        const testBtn = document.getElementById("testBtn");
+        const debugPanel = document.getElementById("debugPanel");
+
+        let currentMode = "levels";
+        let currentLevel = 1;
+        let completedLevels = [1];
+        let gridSize = 6;
+        let cellSize = 65;
+        let snake = [];
+        let foods = [];
+        let dx = cellSize,
+          dy = 0;
+        let gameRunning = false;
+        let gamePaused = false;
+        let changingDirection = false;
+        let gameInterval = null;
+        let applesEaten = 0;
+        let totalApplesInLevel = 0;
+        let baseGameSpeed = 200;
+        let gameSpeed = 200;
+        let speedIncreasePerApple = 3;
+        let classicScore = 0;
+        let classicHighScore = 0;
+
+        // ========== ТАБЛИЦА РЕКОРДОВ (LEADERBOARD) ==========
+        let leaderboard =
+          JSON.parse(localStorage.getItem("snakeLeaderboard")) || [];
+
+        // Функция сохранения рекорда
+        function saveHighScore(score, mode) {
+          if (typeof score !== "number" || isNaN(score) || score === 0) return;
+
+          const playerName =
+            prompt(
+              "🎉 Новый рекорд! Введите ваше имя (макс. 15 символов):",
+              "Игрок"
+            ) || "Игрок";
+          const trimmedName = playerName.substring(0, 15);
+
+          leaderboard.push({
+            name: trimmedName,
+            score: score,
+            mode: mode === "classic" ? "Классика" : `Уровень ${currentLevel}`,
+            date: new Date().toLocaleDateString("ru-RU"),
+          });
+
+          leaderboard.sort((a, b) => b.score - a.score);
+          leaderboard = leaderboard.slice(0, 10);
+          localStorage.setItem("snakeLeaderboard", JSON.stringify(leaderboard));
+
+          displayLeaderboard();
+        }
+
+        // Функция отображения таблицы рекордов
+        function displayLeaderboard() {
+          const existingPanel = document.querySelector(".leaderboard-panel");
+          if (existingPanel) existingPanel.remove();
+
+          const isDark = document.body.classList.contains("dark-theme");
+
+          let leaderboardHTML = `
+                    <div class="leaderboard-panel" style="
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: ${isDark ? "#2a5e4a" : "#e2f0e6"};
+                        border: 2px solid #ffb347;
+                        border-radius: 20px;
+                        padding: 20px;
+                        z-index: 100;
+                        min-width: 280px;
+                        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+                        color: ${isDark ? "#e0ffe0" : "#2d5a44"};
+                    ">
+                        <h3 style="text-align: center; margin-bottom: 15px; color: #ffb347;">🏆 ТОП-10 ИГРОКОВ 🏆</h3>
+                        <ul style="list-style: none; padding: 0; margin-bottom: 15px;">
+                `;
+
+          if (leaderboard.length === 0) {
+            leaderboardHTML +=
+              '<li style="text-align: center; padding: 10px;">Пока нет рекордов</li>';
+          } else {
+            leaderboard.forEach((entry, index) => {
+              let medal = "";
+              if (index === 0) medal = "🥇 ";
+              else if (index === 1) medal = "🥈 ";
+              else if (index === 2) medal = "🥉 ";
+
+              leaderboardHTML += `
+                            <li style="display: flex; justify-content: space-between; padding: 5px 10px; border-bottom: 1px solid #ffb34740;">
+                                <span>${medal}${entry.name}</span>
+                                <span style="font-weight: bold; color: #ffb347;">${entry.score}</span>
+                                <span style="font-size: 12px; opacity: 0.7;">${entry.mode}</span>
+                            </li>
+                        `;
+            });
+          }
+
+          leaderboardHTML += `
+                        </ul>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button id="closeLeaderboard" style="
+                                background: transparent;
+                                border: 2px solid #ffb347;
+                                color: ${isDark ? "#e0ffe0" : "#2d5a44"};
+                                padding: 8px 20px;
+                                border-radius: 30px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">Закрыть</button>
+                            <button id="clearLeaderboard" style="
+                                background: transparent;
+                                border: 2px solid #ff6b6b;
+                                color: #ff6b6b;
+                                padding: 8px 20px;
+                                border-radius: 30px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">Очистить</button>
+                        </div>
+                    </div>
+                `;
+
+          const gameContainer = document.querySelector(".game-container");
+          gameContainer.insertAdjacentHTML("beforeend", leaderboardHTML);
+
+          document
+            .getElementById("closeLeaderboard")
+            .addEventListener("click", () => {
+              document.querySelector(".leaderboard-panel").remove();
+            });
+
+          document
+            .getElementById("clearLeaderboard")
+            .addEventListener("click", () => {
+              if (confirm("Очистить все рекорды?")) {
+                leaderboard = [];
+                localStorage.removeItem("snakeLeaderboard");
+                document.querySelector(".leaderboard-panel").remove();
+              }
+            });
+        }
+
+        // ========== СИСТЕМА ЛОГИРОВАНИЯ ==========
+        const gameLogger = {
+          logs: [],
+          isEnabled: true,
+
+          log(event, data) {
+            if (!this.isEnabled) return;
+
+            const logEntry = {
+              timestamp: new Date().toISOString(),
+              event: event,
+              data: data,
+            };
+            this.logs.push(logEntry);
+
+            if (this.logs.length > 100) {
+              this.logs = this.logs.slice(-100);
+            }
+
+            const colors = {
+              GAME_START: "#4CAF50",
+              GAME_OVER: "#F44336",
+              LEVEL_COMPLETE: "#FFC107",
+              APPLE_EATEN: "#FF9800",
+              DIRECTION_CHANGE: "#2196F3",
+              ERROR: "#F44336",
+              DEBUG: "#9C27B0",
+            };
+
+            const color = colors[event] || "#666";
+            console.log(
+              `%c[${logEntry.timestamp.slice(11, 19)}] ${event}:`,
+              `color: ${color}; font-weight: bold;`,
+              data
+            );
+
+            this.updateDebugPanel();
+          },
+
+          exportLogs() {
+            const logText = JSON.stringify(this.logs, null, 2);
+            const blob = new Blob([logText], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `snake-log-${new Date()
+              .toISOString()
+              .slice(0, 19)
+              .replace(/:/g, "-")}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            this.log("LOGS_EXPORTED", { count: this.logs.length });
+          },
+
+          clearLogs() {
+            this.logs = [];
+            console.clear();
+            console.log("🧹 Логи очищены");
+          },
+
+          updateDebugPanel() {
+            if (this.logs.length > 0) {
+              const lastLog = this.logs[this.logs.length - 1];
+              debugPanel.innerHTML = `[${lastLog.timestamp.slice(11, 19)}] ${
+                lastLog.event
+              }: ${JSON.stringify(lastLog.data)}`;
+            }
+          },
+
+          showDebug(show = true) {
+            debugPanel.style.display = show ? "block" : "none";
+          },
+        };
+
+        function addLoggingControls() {
+          const loggingDiv = document.createElement("div");
+          loggingDiv.className = "setting-item";
+          loggingDiv.innerHTML = `
+                    <label style="justify-content: center; gap: 10px; flex-wrap: wrap;">
+                        <button id="exportLogsBtn" style="background:transparent; border:1px solid; padding:5px 10px; border-radius:15px; cursor:pointer;">📥 Экспорт логов</button>
+                        <button id="clearLogsBtn" style="background:transparent; border:1px solid; padding:5px 10px; border-radius:15px; cursor:pointer;">🗑️ Очистить логи</button>
+                    </label>
+                    <label style="justify-content: center; margin-top:5px; display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" id="enableLogging" checked> Включить логирование
+                        <input type="checkbox" id="showDebugPanel"> Показать панель
+                    </label>
+                `;
+
+          settingsPanel.appendChild(loggingDiv);
+
+          document
+            .getElementById("exportLogsBtn")
+            .addEventListener("click", () => gameLogger.exportLogs());
+          document
+            .getElementById("clearLogsBtn")
+            .addEventListener("click", () => gameLogger.clearLogs());
+          document
+            .getElementById("enableLogging")
+            .addEventListener("change", (e) => {
+              gameLogger.isEnabled = e.target.checked;
+            });
+          document
+            .getElementById("showDebugPanel")
+            .addEventListener("change", (e) => {
+              gameLogger.showDebug(e.target.checked);
+            });
+        }
+
+        // ========== СИСТЕМА АВТОМАТИЧЕСКОГО ТЕСТИРОВАНИЯ ==========
+        const GameTests = {
+          results: [],
+
+          assert(condition, message) {
+            this.results.push({
+              passed: condition,
+              message: message,
+              time: new Date().toLocaleTimeString(),
+            });
+
+            if (condition) {
+              console.log(`%c✅ PASS: ${message}`, "color: #4CAF50");
+            } else {
+              console.log(`%c❌ FAIL: ${message}`, "color: #F44336");
+            }
+          },
+
+          runAll() {
+            console.clear();
+            console.log(
+              '%c🧪 ЗАПУСК ТЕСТИРОВАНИЯ ИГРЫ "ЗМЕЙКА"',
+              "color: #FFC107; font-size: 16px; font-weight: bold;"
+            );
+            console.log("===========================================");
+
+            this.results = [];
+
+            // Тест 1: Создание змейки
+            this.testSnakeCreation();
+
+            // Тест 2: Движение змейки
+            this.testSnakeMovement();
+
+            // Тест 3: Проверка столкновений
+            this.testCollisions();
+
+            // Тест 4: Поедание яблока
+            this.testEatingApple();
+
+            // Тест 5: Проверка направления
+            this.testDirectionChange();
+
+            // Тест 6: Проверка границ поля
+            this.testBoundaries();
+
+            // Тест 7: Проверка сохранения рекордов
+            this.testLeaderboard();
+
+            console.log("===========================================");
+            console.log(
+              `📊 ИТОГИ: ${this.results.filter((r) => r.passed).length}/${
+                this.results.length
+              } тестов пройдено`
+            );
+
+            this.showReport();
+
+            return this.results;
+          },
+
+          testSnakeCreation() {
+            const testSnake = [
+              { x: 0, y: 0 },
+              { x: 10, y: 0 },
+              { x: 20, y: 0 },
+            ];
+            this.assert(
+              testSnake.length === 3,
+              "Змейка создается с правильным количеством сегментов"
+            );
+            this.assert(
+              testSnake[0].x === 0 && testSnake[0].y === 0,
+              "Первый сегмент - голова"
+            );
+            this.assert(
+              testSnake[2].x === 20 && testSnake[2].y === 0,
+              "Последний сегмент - хвост"
+            );
+          },
+
+          testSnakeMovement() {
+            const testSnake = [{ x: 10, y: 10 }];
+            const dx = 10,
+              dy = 0;
+            const newHead = { x: testSnake[0].x + dx, y: testSnake[0].y + dy };
+            this.assert(
+              newHead.x === 20 && newHead.y === 10,
+              "Змейка движется вправо на 10 пикселей"
+            );
+
+            const dy2 = -10;
+            const newHeadUp = { x: testSnake[0].x, y: testSnake[0].y + dy2 };
+            this.assert(
+              newHeadUp.x === 10 && newHeadUp.y === 0,
+              "Змейка движется вверх на 10 пикселей"
+            );
+          },
+
+          testCollisions() {
+            const wallCollision = (x, y, width, height) =>
+              x < 0 || x >= width || y < 0 || y >= height;
+            this.assert(
+              wallCollision(-10, 10, 300, 300) === true,
+              "Обнаруживается столкновение с левой стеной"
+            );
+            this.assert(
+              wallCollision(310, 10, 300, 300) === true,
+              "Обнаруживается столкновение с правой стеной"
+            );
+            this.assert(
+              wallCollision(10, -10, 300, 300) === true,
+              "Обнаруживается столкновение с верхней стеной"
+            );
+            this.assert(
+              wallCollision(10, 310, 300, 300) === true,
+              "Обнаруживается столкновение с нижней стеной"
+            );
+            this.assert(
+              wallCollision(150, 150, 300, 300) === false,
+              "Отсутствие столкновения внутри поля"
+            );
+
+            const snake = [
+              { x: 30, y: 10 },
+              { x: 20, y: 10 },
+              { x: 10, y: 10 },
+            ];
+            const head = { x: 10, y: 10 };
+            const selfCollision = snake.some(
+              (seg, index) =>
+                index !== 0 && seg.x === head.x && seg.y === head.y
+            );
+            this.assert(
+              selfCollision === true,
+              "Обнаруживается столкновение с собой"
+            );
+          },
+
+          testEatingApple() {
+            const snakeHead = { x: 10, y: 10 };
+            const apple = { x: 10, y: 10 };
+            this.assert(
+              snakeHead.x === apple.x && snakeHead.y === apple.y,
+              "Обнаруживается поедание яблока"
+            );
+
+            const snakeLength = 3;
+            const newLength = snakeLength + 1;
+            this.assert(
+              newLength > snakeLength,
+              "Длина змейки увеличивается после поедания"
+            );
+          },
+
+          testDirectionChange() {
+            const directions = [
+              { key: 37, name: "ВЛЕВО", dx: -10, dy: 0 },
+              { key: 38, name: "ВВЕРХ", dx: 0, dy: -10 },
+              { key: 39, name: "ВПРАВО", dx: 10, dy: 0 },
+              { key: 40, name: "ВНИЗ", dx: 0, dy: 10 },
+            ];
+
+            directions.forEach((dir) => {
+              this.assert(
+                dir.dx === -10 || dir.dx === 0 || dir.dx === 10,
+                `Направление ${dir.name}: корректное изменение X (${dir.dx})`
+              );
+              this.assert(
+                dir.dy === -10 || dir.dy === 0 || dir.dy === 10,
+                `Направление ${dir.name}: корректное изменение Y (${dir.dy})`
+              );
+            });
+          },
+
+          testBoundaries() {
+            const canvasSize = 300;
+            const cellSize = 10;
+            const maxX = canvasSize - cellSize;
+            const maxY = canvasSize - cellSize;
+
+            this.assert(maxX === 290, "Максимальная координата X корректна");
+            this.assert(maxY === 290, "Максимальная координата Y корректна");
+          },
+
+          testLeaderboard() {
+            try {
+              localStorage.setItem("test", "test");
+              localStorage.removeItem("test");
+              this.assert(true, "localStorage доступен и работает");
+            } catch (e) {
+              this.assert(false, "localStorage недоступен");
+            }
+
+            const testScores = [
+              { score: 50, name: "Player1" },
+              { score: 100, name: "Player2" },
+              { score: 75, name: "Player3" },
+            ];
+
+            testScores.sort((a, b) => b.score - a.score);
+            this.assert(
+              testScores[0].score === 100,
+              "Сортировка рекордов работает (первый - максимум)"
+            );
+            this.assert(
+              testScores[2].score === 50,
+              "Сортировка рекордов работает (последний - минимум)"
+            );
+          },
+
+          showReport() {
+            const isDark = document.body.classList.contains("dark-theme");
+
+            const reportDiv = document.createElement("div");
+            reportDiv.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: ${isDark ? "#2a5e4a" : "#e2f0e6"};
+                        border: 3px solid #ffb347;
+                        border-radius: 20px;
+                        padding: 25px;
+                        z-index: 1000;
+                        min-width: 400px;
+                        max-height: 80vh;
+                        overflow-y: auto;
+                        box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+                    `;
+
+            const passedTests = this.results.filter((r) => r.passed).length;
+            const totalTests = this.results.length;
+            const percent = Math.round((passedTests / totalTests) * 100);
+
+            let resultsHTML = `
+                        <h2 style="text-align: center; margin-bottom: 20px; color: #ffb347;">🧪 ОТЧЕТ ТЕСТИРОВАНИЯ</h2>
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 48px; font-weight: bold; color: ${
+                              percent === 100 ? "#4CAF50" : "#ffb347"
+                            };">${passedTests}/${totalTests}</div>
+                            <div style="font-size: 18px;">Успешность: ${percent}%</div>
+                            <div style="width: 100%; height: 10px; background: #ddd; border-radius: 5px; margin-top: 10px;">
+                                <div style="width: ${percent}%; height: 100%; background: ${
+              percent === 100 ? "#4CAF50" : "#ffb347"
+            }; border-radius: 5px;"></div>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid #ffb347; padding-top: 15px;">
+                    `;
+
+            this.results.forEach((test, index) => {
+              resultsHTML += `
+                            <div style="margin-bottom: 8px; padding: 8px; border-radius: 5px; background: ${
+                              test.passed
+                                ? "rgba(76, 175, 80, 0.1)"
+                                : "rgba(244, 67, 54, 0.1)"
+                            };">
+                                <span style="color: ${
+                                  test.passed ? "#4CAF50" : "#F44336"
+                                }; margin-right: 10px;">${
+                test.passed ? "✅" : "❌"
+              }</span>
+                                <span>${test.message}</span>
+                                <span style="float: right; font-size: 11px; color: #999;">${
+                                  test.time
+                                }</span>
+                            </div>
+                        `;
+            });
+
+            resultsHTML += `
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button id="closeTestReport" style="
+                                background: transparent;
+                                border: 2px solid #ffb347;
+                                color: ${isDark ? "#e0ffe0" : "#2d5a44"};
+                                padding: 10px 25px;
+                                border-radius: 30px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">Закрыть отчет</button>
+                            <button id="exportTestReport" style="
+                                background: transparent;
+                                border: 2px solid #4CAF50;
+                                color: #4CAF50;
+                                padding: 10px 25px;
+                                border-radius: 30px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">📥 Экспорт</button>
+                        </div>
+                    `;
+
+            reportDiv.innerHTML = resultsHTML;
+            document.body.appendChild(reportDiv);
+
+            document
+              .getElementById("closeTestReport")
+              .addEventListener("click", () => reportDiv.remove());
+            document
+              .getElementById("exportTestReport")
+              .addEventListener("click", () => {
+                const reportText = this.results
+                  .map(
+                    (r) => `${r.passed ? "✅" : "❌"} ${r.message} [${r.time}]`
+                  )
+                  .join("\n");
+
+                const blob = new Blob([reportText], { type: "text/plain" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `test-report-${new Date()
+                  .toISOString()
+                  .slice(0, 10)}.txt`;
+                a.click();
+              });
+          },
+        };
+
+        // Обработчики событий
+        themeToggle.addEventListener("click", () => {
+          document.body.classList.toggle("dark-theme");
+          document.body.classList.toggle("light-theme");
+          draw();
+        });
+
+        modeToggle.addEventListener("click", () => {
+          setMode(currentMode === "levels" ? "classic" : "levels");
+        });
+
+        leaderboardBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          displayLeaderboard();
+        });
+
+        testBtn.addEventListener("click", () => {
+          GameTests.runAll();
+        });
+
+        function setMode(mode) {
+          currentMode = mode;
+          modeButtons.forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.mode === mode);
+          });
+
+          if (mode === "levels") {
+            levelMenu.classList.remove("hidden");
+            progressStrip.classList.remove("hidden");
+            appleStat.classList.remove("hidden");
+            snakeStat.classList.remove("hidden");
+            classicRecordDisplay.classList.add("hidden");
+            hintEl.textContent =
+              "⬆️⬇️⬅️➡️ клавиши · собрать все яблоки · заполнить поле";
+            document.getElementById("totalApples").textContent =
+              gridSize * gridSize - 1;
+            document.getElementById("maxLength").textContent =
+              gridSize * gridSize;
+          } else {
+            levelMenu.classList.add("hidden");
+            progressStrip.classList.add("hidden");
+            appleStat.classList.add("hidden");
+            snakeStat.classList.remove("hidden");
+            classicRecordDisplay.classList.remove("hidden");
+            classicRecordDisplay.textContent = `🏆 ${classicHighScore}`;
+            lengthEl.textContent = snake.length;
+            maxLengthEl.textContent = "∞";
+            hintEl.textContent =
+              "⬆️⬇️⬅️➡️ клавиши · классический режим · рекорд: " +
+              classicHighScore;
+          }
+          resetGame();
+        }
+
+        modeButtons.forEach((btn) => {
+          btn.addEventListener("click", () => setMode(btn.dataset.mode));
+        });
+
+        function initClassic() {
+          gridSize = 15;
+          cellSize = LEVELS[4].cellSize;
+          canvas.width = LEVELS[4].canvasSize;
+          canvas.height = LEVELS[4].canvasSize;
+
+          const centerCol = Math.floor(gridSize / 2);
+          const centerRow = Math.floor(gridSize / 2);
+          snake = [
+            { x: centerCol * cellSize, y: centerRow * cellSize },
+            { x: (centerCol - 1) * cellSize, y: centerRow * cellSize },
+            { x: (centerCol - 2) * cellSize, y: centerRow * cellSize },
+          ];
+          dx = cellSize;
+          dy = 0;
+          applesEaten = 0;
+          classicScore = 0;
+          gameSpeed = baseGameSpeed;
+          createClassicApple();
+          lengthEl.textContent = snake.length;
+          maxLengthEl.textContent = "∞";
+          gameOverEl.textContent =
+            victoryEl.textContent =
+            scoreMessage.textContent =
+              "";
+          draw();
+
+          gameLogger.log("GAME_INIT", {
+            mode: "classic",
+            snakeLength: snake.length,
+          });
+        }
+
+        function createClassicApple() {
+          foods = [];
+          let freeCells = [];
+          for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+              const x = col * cellSize,
+                y = row * cellSize;
+              if (!snake.some((seg) => seg.x === x && seg.y === y))
+                freeCells.push({ x, y });
+            }
+          }
+          if (freeCells.length) {
+            const chosen =
+              freeCells[Math.floor(Math.random() * freeCells.length)];
+            foods.push({ x: chosen.x, y: chosen.y });
+          }
+        }
+
+        function initLevels() {
+          const level = LEVELS[currentLevel];
+          gridSize = level.grid;
+          cellSize = level.cellSize;
+          canvas.width = level.canvasSize;
+          canvas.height = level.canvasSize;
+          totalApplesInLevel = gridSize * gridSize - 1;
+
+          const centerCol = Math.floor(gridSize / 2);
+          const centerRow = Math.floor(gridSize / 2);
+          snake = [{ x: centerCol * cellSize, y: centerRow * cellSize }];
+          dx = cellSize;
+          dy = 0;
+          applesEaten = 0;
+          gameSpeed = baseGameSpeed;
+          createLevelApple();
+          updateUI();
+          gameOverEl.textContent =
+            victoryEl.textContent =
+            scoreMessage.textContent =
+              "";
+
+          gameLogger.log("GAME_INIT", {
+            mode: "levels",
+            level: currentLevel,
+            gridSize: gridSize,
+          });
+        }
+
+        function createLevelApple() {
+          foods = [];
+          let freeCells = [];
+          for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+              const x = col * cellSize,
+                y = row * cellSize;
+              if (!snake.some((seg) => seg.x === x && seg.y === y))
+                freeCells.push({ x, y, col, row });
+            }
+          }
+          if (!freeCells.length) return;
+
+          let safeCells = freeCells.filter((cell) => {
+            if (freeCells.length <= 2) return true;
+            const neighbours = [
+              [cell.col + 1, cell.row],
+              [cell.col - 1, cell.row],
+              [cell.col, cell.row + 1],
+              [cell.col, cell.row - 1],
+            ].filter(
+              ([c, r]) => c >= 0 && c < gridSize && r >= 0 && r < gridSize
+            );
+            return neighbours.some(([c, r]) => {
+              const nx = c * cellSize,
+                ny = r * cellSize;
+              return !snake.some((seg) => seg.x === nx && seg.y === ny);
+            });
+          });
+
+          let candidates = safeCells.length ? safeCells : freeCells;
+          if (candidates.length) {
+            const chosen =
+              candidates[Math.floor(Math.random() * candidates.length)];
+            foods.push({ x: chosen.x, y: chosen.y });
+          }
+        }
+
+        function updateUI() {
+          const total = gridSize * gridSize;
+          applesCollectedEl.textContent = applesEaten;
+          totalApplesEl.textContent = totalApplesInLevel;
+          lengthEl.textContent = snake.length;
+          maxLengthEl.textContent = total;
+          progressFill.style.width = (snake.length / total) * 100 + "%";
+
+          if (snake.length === total) levelComplete();
+        }
+
+        function levelComplete() {
+          if (!gameRunning) return;
+          gameRunning = false;
+          clearInterval(gameInterval);
+
+          gameLogger.log("LEVEL_COMPLETE", {
+            level: currentLevel,
+            gridSize: gridSize,
+            snakeLength: snake.length,
+            applesEaten: applesEaten,
+          });
+
+          if (!completedLevels.includes(currentLevel)) {
+            completedLevels.push(currentLevel);
+            if (currentLevel < 6 && !completedLevels.includes(currentLevel + 1))
+              completedLevels.push(currentLevel + 1);
+          }
+
+          victoryEl.textContent = `✨ уровень ${gridSize}x${gridSize} пройден ✨`;
+          saveHighScore(snake.length, "level");
+
+          setTimeout(() => (victoryEl.textContent = ""), 2000);
+          updateLevelButtons();
+          enableButtons(false);
+          draw();
+        }
+
+        function gameOver() {
+          gameRunning = false;
+          clearInterval(gameInterval);
+
+          gameLogger.log("GAME_OVER", {
+            mode: currentMode,
+            score: currentMode === "classic" ? classicScore : applesEaten,
+            snakeLength: snake.length,
+            reason: "collision",
+          });
+
+          if (currentMode === "classic") {
+            gameOverEl.textContent = "💀 игра окончена 💀";
+
+            if (classicScore > classicHighScore) {
+              classicHighScore = classicScore;
+              scoreMessage.textContent = `🏆 новый рекорд: ${classicScore} 🏆`;
+              hintEl.textContent =
+                "⬆️⬇️⬅️➡️ клавиши · классический режим · рекорд: " +
+                classicHighScore;
+              classicRecordDisplay.textContent = `🏆 ${classicHighScore}`;
+              saveHighScore(classicScore, "classic");
+            } else {
+              scoreMessage.textContent = `счёт: ${classicScore}`;
+            }
+          } else {
+            gameOverEl.textContent = "💀 игра окончена 💀";
+          }
+
+          enableButtons(false);
+          draw();
+        }
+
+        function enableButtons(keepStartEnabled = true) {
+          startBtn.disabled = keepStartEnabled ? false : true;
+          pauseBtn.disabled = true;
+          pauseBtn.textContent = "⏸ пауза";
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          const isDark = document.body.classList.contains("dark-theme");
+          const gridColor = isDark ? "#6da58b" : "#8fc1a0";
+          const snakeColor = "#ffb347";
+          const snakeHeadColor = "#ffa01c";
+          const appleColor = "#ff6b6b";
+          const appleHighlight = "#ffa0a0";
+          const leafColor = "#7fb080";
+          const stemColor = "#b08b5c";
+          const eyeWhite = "#ffffff";
+          const eyePupil = "#1a2e26";
+
+          ctx.strokeStyle = gridColor;
+          ctx.lineWidth = 0.5;
+          for (let i = 0; i <= canvas.width; i += cellSize) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, canvas.height);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(canvas.width, i);
+            ctx.stroke();
+          }
+
+          foods.forEach((f) => {
+            ctx.fillStyle = appleColor;
+            ctx.beginPath();
+            ctx.arc(
+              f.x + cellSize / 2,
+              f.y + cellSize / 2,
+              cellSize / 2 - 3,
+              0,
+              2 * Math.PI
+            );
+            ctx.fill();
+            ctx.fillStyle = appleHighlight;
+            ctx.beginPath();
+            ctx.arc(
+              f.x + cellSize / 2 - 3,
+              f.y + cellSize / 2 - 3,
+              3,
+              0,
+              2 * Math.PI
+            );
+            ctx.fill();
+            ctx.fillStyle = leafColor;
+            ctx.beginPath();
+            ctx.ellipse(
+              f.x + cellSize / 2 + 5,
+              f.y + cellSize / 2 - 8,
+              3,
+              6,
+              0.2,
+              0,
+              2 * Math.PI
+            );
+            ctx.fill();
+            ctx.strokeStyle = stemColor;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(f.x + cellSize / 2 + 7, f.y + cellSize / 2 - 12);
+            ctx.lineTo(f.x + cellSize / 2 + 10, f.y + cellSize / 2 - 15);
+            ctx.stroke();
+          });
+
+          snake.forEach((seg, idx) => {
+            const isHead = idx === 0;
+            ctx.fillStyle = isHead ? snakeHeadColor : snakeColor;
+            ctx.beginPath();
+            ctx.roundRect(seg.x + 2, seg.y + 2, cellSize - 4, cellSize - 4, 6);
+            ctx.fill();
+
+            if (isHead) {
+              ctx.fillStyle = eyeWhite;
+              const eyeSize = cellSize / 6;
+              const eyeOffset = cellSize / 4;
+
+              if (dx > 0) {
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset,
+                  seg.y + eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset,
+                  seg.y + cellSize - eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.fillStyle = eyePupil;
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset + 2,
+                  seg.y + eyeOffset - 1,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset + 2,
+                  seg.y + cellSize - eyeOffset - 1,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+              } else if (dx < 0) {
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset,
+                  seg.y + eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset,
+                  seg.y + cellSize - eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.fillStyle = eyePupil;
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset - 2,
+                  seg.y + eyeOffset - 1,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset - 2,
+                  seg.y + cellSize - eyeOffset - 1,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+              } else if (dy < 0) {
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset,
+                  seg.y + eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset,
+                  seg.y + eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.fillStyle = eyePupil;
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset - 1,
+                  seg.y + eyeOffset - 2,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset + 1,
+                  seg.y + eyeOffset - 2,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+              } else if (dy > 0) {
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset,
+                  seg.y + cellSize - eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset,
+                  seg.y + cellSize - eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.fillStyle = eyePupil;
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + eyeOffset - 1,
+                  seg.y + cellSize - eyeOffset + 2,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset + 1,
+                  seg.y + cellSize - eyeOffset + 2,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+              } else {
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset,
+                  seg.y + eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset,
+                  seg.y + cellSize - eyeOffset,
+                  eyeSize,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.fillStyle = eyePupil;
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset + 2,
+                  seg.y + eyeOffset - 1,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(
+                  seg.x + cellSize - eyeOffset + 2,
+                  seg.y + cellSize - eyeOffset - 1,
+                  eyeSize / 2,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+              }
+            }
+          });
+        }
+
+        function advanceSnake() {
+          if (!gameRunning || gamePaused) return;
+
+          const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+          if (
+            head.x < 0 ||
+            head.x >= canvas.width ||
+            head.y < 0 ||
+            head.y >= canvas.height
+          ) {
+            gameOver();
+            return;
+          }
+
+          if (snake.some((seg) => seg.x === head.x && seg.y === head.y)) {
+            gameOver();
+            return;
+          }
+
+          snake.unshift(head);
+
+          const foodIdx = foods.findIndex(
+            (f) => f.x === head.x && f.y === head.y
+          );
+
+          if (foodIdx !== -1) {
+            applesEaten++;
+            foods.splice(foodIdx, 1);
+
+            gameLogger.log("APPLE_EATEN", {
+              applesEaten: applesEaten,
+              snakeLength: snake.length,
+              mode: currentMode,
+              score: currentMode === "classic" ? classicScore : applesEaten,
+            });
+
+            if (currentMode === "classic") {
+              classicScore++;
+              lengthEl.textContent = snake.length;
+              gameSpeed = Math.max(
+                80,
+                baseGameSpeed - classicScore * speedIncreasePerApple
+              );
+
+              if (gameRunning && !gamePaused) {
+                clearInterval(gameInterval);
+                gameInterval = setInterval(gameStep, gameSpeed);
+              }
+
+              createClassicApple();
+            } else {
+              if (snake.length < gridSize * gridSize) createLevelApple();
+              gameSpeed = Math.max(
+                80,
+                baseGameSpeed - applesEaten * speedIncreasePerApple * 2
+              );
+
+              if (gameRunning && !gamePaused) {
+                clearInterval(gameInterval);
+                gameInterval = setInterval(gameStep, gameSpeed);
+              }
+
+              updateUI();
+            }
+          } else {
+            snake.pop();
+            if (currentMode === "classic") lengthEl.textContent = snake.length;
+          }
+
+          if (currentMode === "levels") updateUI();
+          draw();
+        }
+
+        function gameStep() {
+          changingDirection = false;
+          advanceSnake();
+        }
+
+        function changeDirection(e) {
+          if (!gameRunning || gamePaused || changingDirection) return;
+
+          let key = e.keyCode;
+
+          if (e.type === "click") {
+            const dir = e.target.dataset.dir;
+            if (dir === "up") key = 38;
+            else if (dir === "down") key = 40;
+            else if (dir === "left") key = 37;
+            else if (dir === "right") key = 39;
+            else return;
+          }
+
+          const goingUp = dy === -cellSize,
+            goingDown = dy === cellSize;
+          const goingLeft = dx === -cellSize,
+            goingRight = dx === cellSize;
+
+          changingDirection = true;
+
+          let newDx = dx,
+            newDy = dy;
+
+          if (key === 37 && !goingRight) {
+            newDx = -cellSize;
+            newDy = 0;
+          } else if (key === 38 && !goingDown) {
+            newDx = 0;
+            newDy = -cellSize;
+          } else if (key === 39 && !goingLeft) {
+            newDx = cellSize;
+            newDy = 0;
+          } else if (key === 40 && !goingUp) {
+            newDx = 0;
+            newDy = cellSize;
+          }
+
+          if (newDx !== dx || newDy !== dy) {
+            gameLogger.log("DIRECTION_CHANGE", {
+              from: { dx, dy },
+              to: { dx: newDx, dy: newDy },
+            });
+            dx = newDx;
+            dy = newDy;
+          }
+        }
+
+        function startGame() {
+          if (!gameRunning) {
+            gameRunning = true;
+            gamePaused = false;
+            gameOverEl.textContent =
+              victoryEl.textContent =
+              scoreMessage.textContent =
+                "";
+            clearInterval(gameInterval);
+            gameInterval = setInterval(gameStep, gameSpeed);
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+
+            gameLogger.log("GAME_START", {
+              mode: currentMode,
+              level: currentLevel,
+              speed: gameSpeed,
+              snakeLength: snake.length,
+            });
+          }
+        }
+
+        function pauseGame() {
+          if (gameRunning) {
+            gamePaused = !gamePaused;
+            pauseBtn.textContent = gamePaused ? "▶ старт" : "⏸ пауза";
+
+            gameLogger.log("GAME_PAUSE", { paused: gamePaused });
+          }
+        }
+
+        function resetGame() {
+          gameRunning = false;
+          clearInterval(gameInterval);
+          gameSpeed = baseGameSpeed;
+          initGame();
+          enableButtons(true);
+          pauseBtn.textContent = "⏸ пауза";
+          updateLevelButtons();
+
+          gameLogger.log("GAME_RESET", {
+            mode: currentMode,
+            level: currentLevel,
+          });
+        }
+
+        function goToLevel(level) {
+          if (completedLevels.includes(level)) {
+            currentLevel = level;
+            resetGame();
+          }
+        }
+
+        function updateLevelButtons() {
+          document.querySelectorAll(".level-btn").forEach((btn) => {
+            const lvl = parseInt(btn.dataset.level);
+            btn.classList.remove("active", "completed", "locked");
+            if (lvl === currentLevel) btn.classList.add("active");
+            else if (completedLevels.includes(lvl))
+              btn.classList.add("completed");
+            else btn.classList.add("locked");
+          });
+        }
+
+        settingsGear.addEventListener("click", (e) => {
+          e.stopPropagation();
+          settingsPanel.classList.toggle("show");
+        });
+
+        document.addEventListener("click", (e) => {
+          if (
+            !settingsGear.contains(e.target) &&
+            !settingsPanel.contains(e.target)
+          ) {
+            settingsPanel.classList.remove("show");
+          }
+        });
+
+        const speedSlider = document.getElementById("speedSlider");
+        const speedValue = document.getElementById("speedValue");
+        speedSlider.addEventListener("input", function () {
+          baseGameSpeed = +this.value;
+          gameSpeed = baseGameSpeed;
+          speedValue.textContent = baseGameSpeed;
+          if (gameRunning && !gamePaused) {
+            clearInterval(gameInterval);
+            gameInterval = setInterval(gameStep, gameSpeed);
+          }
+        });
+
+        const speedIncreaseSlider = document.getElementById(
+          "speedIncreaseSlider"
+        );
+        const speedIncreaseValue =
+          document.getElementById("speedIncreaseValue");
+        speedIncreaseSlider.addEventListener("input", function () {
+          speedIncreasePerApple = +this.value;
+          speedIncreaseValue.textContent = speedIncreasePerApple;
+        });
+
+        const cellSizeSlider = document.getElementById("cellSizeSlider");
+        const cellSizeValue = document.getElementById("cellSizeValue");
+        cellSizeSlider.addEventListener("input", function () {
+          let base = +this.value;
+          cellSizeValue.textContent = base;
+          LEVELS[1].cellSize = base;
+          LEVELS[1].canvasSize = base * 6;
+          LEVELS[2].cellSize = Math.floor(base * 0.66);
+          LEVELS[2].canvasSize = LEVELS[2].cellSize * 9;
+          LEVELS[3].cellSize = Math.floor(base * 0.5);
+          LEVELS[3].canvasSize = LEVELS[3].cellSize * 12;
+          LEVELS[4].cellSize = Math.floor(base * 0.4);
+          LEVELS[4].canvasSize = LEVELS[4].cellSize * 15;
+          LEVELS[5].cellSize = Math.floor(base * 0.32);
+          LEVELS[5].canvasSize = LEVELS[5].cellSize * 18;
+          LEVELS[6].cellSize = Math.floor(base * 0.28);
+          LEVELS[6].canvasSize = LEVELS[6].cellSize * 21;
+          if (!gameRunning) initGame();
+          else resetGame();
+        });
+
+        document
+          .getElementById("resetSettings")
+          .addEventListener("click", () => {
+            baseGameSpeed = 200;
+            gameSpeed = 200;
+            speedIncreasePerApple = 3;
+            speedSlider.value = 200;
+            speedValue.textContent = 200;
+            speedIncreaseSlider.value = 3;
+            speedIncreaseValue.textContent = 3;
+            cellSizeSlider.value = 65;
+            cellSizeValue.textContent = 65;
+            LEVELS[1] = { grid: 6, cellSize: 65, canvasSize: 390 };
+            LEVELS[2] = { grid: 9, cellSize: 43, canvasSize: 387 };
+            LEVELS[3] = { grid: 12, cellSize: 32, canvasSize: 384 };
+            LEVELS[4] = { grid: 15, cellSize: 26, canvasSize: 390 };
+            LEVELS[5] = { grid: 18, cellSize: 21, canvasSize: 378 };
+            LEVELS[6] = { grid: 21, cellSize: 18, canvasSize: 378 };
+            resetGame();
+          });
+
+        document.querySelectorAll(".level-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            goToLevel(parseInt(this.dataset.level));
+          });
+        });
+
+        if ("ontouchstart" in window) {
+          document.getElementById("mobileControls").style.display = "flex";
+          document
+            .querySelectorAll(".mobile-btn")
+            .forEach((b) => b.addEventListener("click", changeDirection));
+        }
+
+        document.addEventListener("keydown", (e) => {
+          if ([37, 38, 39, 40].includes(e.keyCode)) {
+            e.preventDefault();
+            changeDirection(e);
+          }
+        });
+
+        startBtn.addEventListener("click", startGame);
+        pauseBtn.addEventListener("click", pauseGame);
+        resetBtn.addEventListener("click", resetGame);
+
+        CanvasRenderingContext2D.prototype.roundRect = function (
+          x,
+          y,
+          w,
+          h,
+          r
+        ) {
+          if (w < 2 * r) r = w / 2;
+          if (h < 2 * r) r = h / 2;
+          this.beginPath();
+          this.moveTo(x + r, y);
+          this.lineTo(x + w - r, y);
+          this.quadraticCurveTo(x + w, y, x + w, y + r);
+          this.lineTo(x + w, y + h - r);
+          this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+          this.lineTo(x + r, y + h);
+          this.quadraticCurveTo(x, y + h, x, y + h - r);
+          this.lineTo(x, y + r);
+          this.quadraticCurveTo(x, y, x + r, y);
+          this.closePath();
+          return this;
+        };
+
+        function initGame() {
+          if (currentMode === "levels") initLevels();
+          else initClassic();
+          updateLevelButtons();
+          draw();
+        }
+
+        addLoggingControls();
+
+        setMode("levels");
+
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", () => {
+            navigator.serviceWorker
+              .register("sw.js")
+              .then((registration) => {
+                console.log(
+                  "ServiceWorker зарегистрирован:",
+                  registration.scope
+                );
+              })
+              .catch((error) => {
+                console.log("Ошибка регистрации ServiceWorker:", error);
+              });
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
